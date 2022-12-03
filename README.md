@@ -18,11 +18,13 @@ pca.setServoDegree(1, 90) # First parameter is Servo (1..8). Second parameter is
 ### Stepper Motors
 
 ```python
+import time
+
 delta = pca.setStepperDegree(1, 90) # First parameter is stepper motor (1..2). Second parameter is angle in degrees (-360..360).
 time.sleep_ms(delta)
 pca.stopMotor(1) # Parameter is the motor to stop (1..2)
 ```
 
-The `setStepperDegree` method just gets the motor running in the desired direction. 
-To be able to stop it when the user desires, it returns the number of milliseconds after which that position is reached. Then you can feed it to 
+The `setStepperDegree` method just gets the motor running in the desired direction.
+To be able to stop it when the user desires, it returns the number of milliseconds after which that position is reached. Then you can feed it to
 `time.sleep_ms`, or any other non-blocking solution.
