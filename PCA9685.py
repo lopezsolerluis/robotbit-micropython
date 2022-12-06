@@ -3,24 +3,24 @@
 from microbit import i2c
 import time
 
-PCA9685_ADDRESS = 0x40
-MODE1 = 0x00
-PRESCALE = 0xFE
-LED0_ON_L = 0x06
+_PCA9685_ADDRESS = 0x40
+_MODE1 = 0x00
+_PRESCALE = 0xFE
+_LED0_ON_L = 0x06
 
-STP_CHA_L = 2047
-STP_CHA_H = 4095
-STP_CHB_L = 1
-STP_CHB_H = 2047
-STP_CHC_L = 1023
-STP_CHC_H = 3071
-STP_CHD_L = 3071
-STP_CHD_H = 1023
+_STP_CHA_L = 2047
+_STP_CHA_H = 4095
+_STP_CHB_L = 1
+_STP_CHB_H = 2047
+_STP_CHC_L = 1023
+_STP_CHC_H = 3071
+_STP_CHD_L = 3071
+_STP_CHD_H = 1023
 
 class PCA9685:
 
     def __init__(self):
-        self.i2cwrite(PCA9685_ADDRESS, MODE1, 0x00)
+        self.i2cwrite(_PCA9685_ADDRESS, _MODE1, 0x00)
         self.setFreq(50)
         for i in range(0, 16):
             self.setPwm(i, 0, 0)
@@ -34,16 +34,16 @@ class PCA9685:
 
     def setFreq(self, freq):
         prescale = int(25000000.0 / 4096.0 / freq + 0.5)
-        oldmode = self.i2cread(PCA9685_ADDRESS, MODE1)
+        oldmode = self.i2cread(_PCA9685_ADDRESS, _MODE1)
         newmode = (oldmode & 0x7F) | 0x10 # sleep
-        self.i2cwrite(PCA9685_ADDRESS, MODE1, newmode) # go to sleep
-        self.i2cwrite(PCA9685_ADDRESS, PRESCALE, prescale) # set the prescaler
-        self.i2cwrite(PCA9685_ADDRESS, MODE1, oldmode)
+        self.i2cwrite(_PCA9685_ADDRESS, _MODE1, newmode) # go to sleep
+        self.i2cwrite(_PCA9685_ADDRESS, _PRESCALE, prescale) # set the prescaler
+        self.i2cwrite(_PCA9685_ADDRESS, _MODE1, oldmode)
         time.sleep_us(5)
-        self.i2cwrite(PCA9685_ADDRESS, MODE1, oldmode | 0xa1)
+        self.i2cwrite(_PCA9685_ADDRESS, _MODE1, oldmode | 0xa1)
 
     def setPwm(self, channel, on, off):
-        i2c.write(PCA9685_ADDRESS, bytes([LED0_ON_L + 4 * channel, on & 0xff, (on >> 8) & 0xff, off & 0xff, (off >> 8) & 0xff]))
+        i2c.write(_PCA9685_ADDRESS, bytes([_LED0_ON_L + 4 * channel, on & 0xff, (on >> 8) & 0xff, off & 0xff, (off >> 8) & 0xff]))
 
     def setServoDegree(self, servo, degree): # servo: 1, etc.
         v_us = (degree * 1800 / 180 + 600) # 0.6 ~ 2.4
@@ -53,26 +53,26 @@ class PCA9685:
     def setStepper(self, index, dir): # index: 1 o 2, dir: True o False
        if (index == 1):
            if (dir): 
-               self.setPwm(0, STP_CHA_L, STP_CHA_H)
-               self.setPwm(2, STP_CHB_L, STP_CHB_H)
-               self.setPwm(1, STP_CHC_L, STP_CHC_H)
-               self.setPwm(3, STP_CHD_L, STP_CHD_H)
+               self.setPwm(0, _STP_CHA_L, _STP_CHA_H)
+               self.setPwm(2, _STP_CHB_L, _STP_CHB_H)
+               self.setPwm(1, _STP_CHC_L, _STP_CHC_H)
+               self.setPwm(3, _STP_CHD_L, _STP_CHD_H)
            else:
-               self.setPwm(3, STP_CHA_L, STP_CHA_H)
-               self.setPwm(1, STP_CHB_L, STP_CHB_H)
-               self.setPwm(2, STP_CHC_L, STP_CHC_H)
-               self.setPwm(0, STP_CHD_L, STP_CHD_H)
+               self.setPwm(3, _STP_CHA_L, _STP_CHA_H)
+               self.setPwm(1, _STP_CHB_L, _STP_CHB_H)
+               self.setPwm(2, _STP_CHC_L, _STP_CHC_H)
+               self.setPwm(0, _STP_CHD_L, _STP_CHD_H)
        else:
            if (dir):
-               self.setPwm(4, STP_CHA_L, STP_CHA_H)
-               self.setPwm(6, STP_CHB_L, STP_CHB_H)
-               self.setPwm(5, STP_CHC_L, STP_CHC_H)
-               self.setPwm(7, STP_CHD_L, STP_CHD_H)
+               self.setPwm(4, _STP_CHA_L, _STP_CHA_H)
+               self.setPwm(6, _STP_CHB_L, _STP_CHB_H)
+               self.setPwm(5, _STP_CHC_L, _STP_CHC_H)
+               self.setPwm(7, _STP_CHD_L, _STP_CHD_H)
            else:
-               self.setPwm(7, STP_CHA_L, STP_CHA_H)
-               self.setPwm(5, STP_CHB_L, STP_CHB_H)
-               self.setPwm(6, STP_CHC_L, STP_CHC_H)
-               self.setPwm(4, STP_CHD_L, STP_CHD_H)
+               self.setPwm(7, _STP_CHA_L, _STP_CHA_H)
+               self.setPwm(5, _STP_CHB_L, _STP_CHB_H)
+               self.setPwm(6, _STP_CHC_L, _STP_CHC_H)
+               self.setPwm(4, _STP_CHD_L, _STP_CHD_H)
 
     def stopMotor(self, index):
         for i in range(0,4) if (index == 1) else range(4,8):
@@ -82,7 +82,6 @@ class PCA9685:
         self.setStepper(index, degree > 0)
         delta_ms = int(abs(10240 * degree / 360))
         return delta_ms # returns milliseconds to stop
-        #self.stopMotor(index)
 
 if __name__=='__main__':   
 
