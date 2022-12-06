@@ -33,13 +33,13 @@ class PCA9685:
         return i2c.read(addr,1)[0]
 
     def setFreq(self, freq):
-        prescale = int(25000000.0 / 4096.0 / freq + 0.5)
+        prescale = round(25000000.0 / 4096.0 / freq - 1) # since python 3, round returns int.
         oldmode = self.i2cread(_PCA9685_ADDRESS, _MODE1)
         newmode = (oldmode & 0x7F) | 0x10 # sleep
         self.i2cwrite(_PCA9685_ADDRESS, _MODE1, newmode) # go to sleep
         self.i2cwrite(_PCA9685_ADDRESS, _PRESCALE, prescale) # set the prescaler
         self.i2cwrite(_PCA9685_ADDRESS, _MODE1, oldmode)
-        time.sleep_us(5)
+        time.sleep_us(5000)
         self.i2cwrite(_PCA9685_ADDRESS, _MODE1, oldmode | 0xa1)
 
     def setPwm(self, channel, on, off):
@@ -48,7 +48,10 @@ class PCA9685:
     def setServoDegree(self, servo, degree): # servo: 1, etc.
         v_us = (degree * 1800 / 180 + 600) # 0.6 ~ 2.4
         value = v_us * 4096 / 20000
-        self.setPwm(servo + 7, 0, int(value))
+        self.setPwm(servo + 7, 0, round(value))
+
+    def releaseServo(self, servo): # servo: 1, etc.
+        self.setPwm(servo + 7, 0, 0)
 
     def setStepper(self, index, dir): # index: 1 o 2, dir: True o False
        if (index == 1):
@@ -80,7 +83,7 @@ class PCA9685:
     
     def setStepperDegree(self, index, degree): # index: 1 o 2    
         self.setStepper(index, degree > 0)
-        delta_ms = int(abs(10240 * degree / 360))
+        delta_ms = round(abs(10240 * abs(degree) / 360))
         return delta_ms # returns milliseconds to stop
 
 if __name__=='__main__':   
