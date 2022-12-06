@@ -12,7 +12,7 @@ pca = PCA9685()
 ### Servos
 
 ```python
-pca.setServoDegree(1, 90) # First parameter is Servo (1..8). Second parameter is angle in degrees (1..180).
+pca.setServoDegree(1, 90) # First parameter is Servo (1..8). Second parameter is angle in degrees (0..180).
 ```
 
 ### Stepper Motors
