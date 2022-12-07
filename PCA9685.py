@@ -45,7 +45,7 @@ class PCA9685:
     def setPwm(self, channel, on, off):
         i2c.write(_PCA9685_ADDRESS, bytes([_LED0_ON_L + 4 * channel, on & 0xff, (on >> 8) & 0xff, off & 0xff, (off >> 8) & 0xff]))
 
-    def setServoDegree(self, servo, degree): # servo: 1, etc.
+    def setServoDegrees(self, servo, degree): # servo: 1, etc.
         v_us = (degree * 1800 / 180 + 600) # 0.6 ~ 2.4
         value = v_us * 4096 / 20000
         self.setPwm(servo + 7, 0, round(value))
@@ -81,19 +81,24 @@ class PCA9685:
         for i in range(0,4) if (index == 1) else range(4,8):
             self.setPwm(i, 0, 0)
     
-    def moveStepperDegree(self, index, degree): # index: 1 or 2    
-        self.setStepper(index, degree > 0)
-        delta_ms = round(abs(10240 * abs(degree) / 360))
+    def moveStepperDegrees(self, index, degrees): # index: 1 or 2    
+        self.setStepper(index, degrees > 0)
+        delta_ms = round(abs(10240 * abs(degrees) / 360))
         return delta_ms # returns milliseconds to stop
 
+    def moveStepperDegreesBlocking(self, index, degrees): # index: 1 or 2
+        delta_ms = self.moveStepperDegrees(index, degrees)
+        time.sleep_ms(delta_ms)
+        self.stopStepper(index)
+        
     def startStepper(self, index, clockwise=True): # index: 1 or 2
         self.setStepper(index, clockwise)
 
 if __name__=='__main__':   
 
     pca = PCA9685()
-    pca.setServoDegree(1, 90) 
-    delta = pca.moveStepperDegree(1, 90)
+    pca.setServoDegrees(1, 90) 
+    delta = pca.moveStepperDegrees(1, 90)
     time.sleep_ms(delta)
     pca.stopStepper(1)
     
