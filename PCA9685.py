@@ -77,20 +77,23 @@ class PCA9685:
                self.setPwm(6, _STP_CHC_L, _STP_CHC_H)
                self.setPwm(4, _STP_CHD_L, _STP_CHD_H)
 
-    def stopMotor(self, index):
+    def stopStepper(self, index):
         for i in range(0,4) if (index == 1) else range(4,8):
             self.setPwm(i, 0, 0)
     
-    def setStepperDegree(self, index, degree): # index: 1 o 2    
+    def moveStepperDegree(self, index, degree): # index: 1 or 2    
         self.setStepper(index, degree > 0)
         delta_ms = round(abs(10240 * abs(degree) / 360))
         return delta_ms # returns milliseconds to stop
+
+    def startStepper(self, index, clockwise=True): # index: 1 or 2
+        self.setStepper(index, clockwise)
 
 if __name__=='__main__':   
 
     pca = PCA9685()
     pca.setServoDegree(1, 90) 
-    delta = pca.setStepperDegree(1, 90)
+    delta = pca.moveStepperDegree(1, 90)
     time.sleep_ms(delta)
-    pca.stopMotor(1)
+    pca.stopStepper(1)
     
