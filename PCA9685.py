@@ -53,7 +53,7 @@ class PCA9685:
     def releaseServo(self, servo): # servo: 1, etc.
         self.setPwm(servo + 7, 0, 0)
 
-    def setStepper(self, index, dir): # index: 1 o 2, dir: True o False
+    def setStepper(self, index, dir): # index: 1 or 2, dir: True or False
        if (index == 1):
            if (dir): 
                self.setPwm(0, _STP_CHA_L, _STP_CHA_H)
